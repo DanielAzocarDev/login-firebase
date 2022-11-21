@@ -7,12 +7,24 @@ import {
   Center,
   Divider,
   Stack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Text,
 } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { FirebaseAuth } from '../../firebase/config'
 import { signInWithGoogle } from '../../firebase/providers'
 
 export const Login = () => {
+
+  //Modal
+  const [isOpen, setIsOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
 
   const [formData, setFormData] = useState({
     email: '',
@@ -38,33 +50,31 @@ export const Login = () => {
         // Signed in 
         const user = userCredential.user;
         setIsLoading(false)
+        setIsOpen(true)
+        setModalMessage('Login successfully!')
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         setIsLoading(false)
+        setIsOpen(true)
+        setModalMessage('Something when wrong, try again!')
       });
   }
 
-  const signinGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // ...
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+  const loginGoogle = () => {
+    signInWithGoogle().then(() => {
+
+      setIsOpen(true)
+      setModalMessage('Login successfully!')
+    }).catch(() => {
+      setIsOpen(true)
+      setModalMessage('Something when wrong, try again!')
+    })
+  }
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen)
   }
 
 
@@ -86,18 +96,34 @@ export const Login = () => {
               Login
             </Button>
           </Center>
-
-
-
         </form>
+
         <Divider mt='4' mb='4' orientation='horizontal' />
 
         <Center>
-          <Button mt='2.5' w='100%' onClick={() => signInWithGoogle()} colorScheme='blackAlpha' variant='solid'>
+          <Button mt='2.5' w='100%' onClick={loginGoogle} colorScheme='blackAlpha' variant='solid'>
             Signin with Google
           </Button>
         </Center>
       </Stack>
+
+      <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={toggleModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize='lg'>{modalMessage}</Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={toggleModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
     </>
   )
 }
