@@ -47,7 +47,6 @@ export const Login = () => {
     setIsLoading(true)
     signInWithEmailAndPassword(FirebaseAuth, formData.email, formData.password)
       .then((userCredential) => {
-        // Signed in 
         const user = userCredential.user;
         setIsLoading(false)
         setIsOpen(true)
