@@ -48,9 +48,10 @@ export const Login = () => {
     signInWithEmailAndPassword(FirebaseAuth, formData.email, formData.password)
       .then((userCredential) => {
         const user = userCredential.user;
+        console.log(user)
         setIsLoading(false)
         setIsOpen(true)
-        setModalMessage('Login successfully!')
+        setModalMessage(`welcome ${user.displayName}, signin successfully!`)
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -109,7 +110,7 @@ export const Login = () => {
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={toggleModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>User Login</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize='lg'>{modalMessage}</Text>
